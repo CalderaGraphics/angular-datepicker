@@ -26,7 +26,7 @@ Module.constant('datePickerConfig', {
 Module.filter('mFormat', function () {
     return function (m, format, tz) {
         if (!(moment.isMoment(m))) {
-            return moment(m).format(format);
+            return (m) ? moment(m).format(format) : '';
         }
         return tz ? moment.tz(m, tz).format(format) : m.format(format);
     };
@@ -39,13 +39,10 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         // this is a bug ?
         require: '?ngModel',
         template: '<div ng-include="template"></div>',
-        restrict: 'A',
-        replace: true,
         scope: {
             model: '=datePicker',
             after: '=?',
-            before: '=?',
-            ineternationalHour: '='
+            before: '=?'
         },
         link: function (scope, element, attrs, ngModel) {
             if (attrs.internationalHour === 'true') {
@@ -194,7 +191,6 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
                 prepareViewData();
             }
 
-            // Fonction qui vérifie la valeur de view 
             function watch() {
                 if (scope.view !== 'date') {
                     return scope.view;
@@ -284,6 +280,7 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
                 date = clipDate(date);
                 if (date) {
                     scope.date = date;
+                    setDate(date);
                     arrowClick = true;
                     update();
                 }
@@ -601,19 +598,9 @@ angular.module('datePicker').factory('datePickerUtils', function () {
 
       return result;
     },
-    //Checks if an event targeted at a specific picker, via either a string name, or an array of strings.
     eventIsForPicker: function (targetIDs, pickerID) {
-      function matches(id) {
-        if (id instanceof RegExp) {
-          return id.test(pickerID);
-        }
-        return id === pickerID;
-      }
-
-      if (angular.isArray(targetIDs)) {
-        return targetIDs.some(matches);
-      }
-      return matches(targetIDs);
+        //Checks if an event targeted at a specific picker, via either a string name, or an array of strings.
+        return (angular.isArray(targetIDs) && targetIDs.indexOf(pickerID) > -1 || targetIDs === pickerID);
     }
   };
 });
@@ -779,19 +766,14 @@ Module.directive('dateTime', ['$compile', '$document', '$filter', 'dateTimeConfi
             views.unshift(view);
 
             function formatter(value) {
-                if (value) {
-                    return dateFilter(value, format, timezone);
-                }
+                return dateFilter(value, format, timezone);
             }
 
             function parser(viewValue) {
-                if (!viewValue) {
-                    return '';
+                if (viewValue.length === format.length) {
+                    return viewValue;
                 }
-                var parsed = moment(viewValue, format);
-                if (parsed.isValid()) {
-                    return parsed;
-                }
+                return (viewValue.length === 0) ? viewValue : undefined;
             }
 
             function setMin(date) {
@@ -983,6 +965,7 @@ Module.directive('dateTime', ['$compile', '$document', '$filter', 'dateTimeConfi
             }
 
             element.bind('focus', showPicker);
+            element.bind('click', showPicker);
             element.bind('blur', clear);
             getTemplate();
         }

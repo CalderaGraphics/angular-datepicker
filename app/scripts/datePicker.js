@@ -26,7 +26,7 @@ Module.constant('datePickerConfig', {
 Module.filter('mFormat', function () {
     return function (m, format, tz) {
         if (!(moment.isMoment(m))) {
-            return moment(m).format(format);
+            return (m) ? moment(m).format(format) : '';
         }
         return tz ? moment.tz(m, tz).format(format) : m.format(format);
     };
@@ -39,13 +39,10 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         // this is a bug ?
         require: '?ngModel',
         template: '<div ng-include="template"></div>',
-        restrict: 'A',
-        replace: true,
         scope: {
             model: '=datePicker',
             after: '=?',
             before: '=?',
-            ineternationalHour: '='
         },
         link: function (scope, element, attrs, ngModel) {
             if (attrs.internationalHour === 'true') {
