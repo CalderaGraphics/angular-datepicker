@@ -91,7 +91,7 @@
             <tbody>
                 <tr>
                     <td colspan="7">
-                        <span ng-repeat="minute in minutes" ng-class="classes[$index]" ng-click="selectDate(minute)" ng-bind="minute|mFormat:internationalHour:tz"></span>
+                        <span ng-repeat="minute in minutes" ng-class="classes[$index]" ng-click="selectDate(minute)" ng-bind="minute|mFormat:internationalHourWithMinutes:tz"></span>
                     </td>
                 </tr>
             </tbody>

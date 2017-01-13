@@ -5,7 +5,6 @@ Module.constant('datePickerConfig', {
     template: 'templates/datepicker.html',
     view: 'month',
     views: ['year', 'month', 'date', 'hours', 'minutes'],
-    internationalHours: ['hh:mm A', 'HH:mm'],
     momentNames: {
         year: 'year',
         month: 'month',
@@ -45,11 +44,7 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
             before: '=?',
         },
         link: function (scope, element, attrs, ngModel) {
-            if (attrs.internationalHour === 'true') {
-                attrs.internationalHour = 'hh:mm A';
-            } else {
-                attrs.internationalHour = 'HH:mm';
-            }
+			var useInternationalFormat = attrs.internationalFormat === 'true';
 
             function prepareViews() {
                 scope.views = datePickerConfig.views.concat();
@@ -66,8 +61,8 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
             }
 
             function prepareInternationalHours() {
-                scope.internationalHours = datePickerConfig.internationalHours.concat();
-                scope.internationalHour = attrs.internationalHour || datePickerConfig.internationalHour;
+				scope.internationalHour = (useInternationalFormat) ? 'HH:mm' : 'h:mm A';
+				scope.internationalHourWithMinutes = (useInternationalFormat) ? 'HH:mm' : 'h:mm A';
             }
 
             function getDate(name) {

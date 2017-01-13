@@ -14,6 +14,7 @@ Module.constant('dateTimeConfig', {
             (attrs.maxView ? 'max-view="' + attrs.maxView + '" ' : '') +
             (attrs.maxDate ? 'max-date="' + attrs.maxDate + '" ' : '') +
             (attrs.autoClose ? 'auto-close="' + attrs.autoClose + '" ' : '') +
+            (attrs.internationalFormat ? 'international-format="true" ' : '') +
             (attrs.template ? 'template="' + attrs.template + '" ' : '') +
             (attrs.minView ? 'min-view="' + attrs.minView + '" ' : '') +
             (attrs.minDate ? 'min-date="' + attrs.minDate + '" ' : '') +
@@ -72,6 +73,8 @@ Module.directive('dateTime', ['$compile', '$document', '$filter', 'dateTimeConfi
             if (index === -1) {
                 views.splice(index, 1);
             }
+			
+			attrs.internationalFormat = (attrs.internationalFormat) ? $parse(attrs.internationalFormat)(scope) : true;
 
             views.unshift(view);
 
@@ -176,6 +179,8 @@ Module.directive('dateTime', ['$compile', '$document', '$filter', 'dateTimeConfi
                                 attrs.maxView = data.maxView;
                             }
                             attrs.view = data.view || attrs.view;
+							
+							attrs.internationalFormat = (data.internationalFormat) ? $parse(data.internationalFormat)(scope) : true;
 
                             if (validateRequired) {
                                 ngModel.$validate();
@@ -246,7 +251,7 @@ Module.directive('dateTime', ['$compile', '$document', '$filter', 'dateTimeConfi
                     //compute top offset including scrolls
                     var scrollOffset = 0,
                         parent = element[0].parentNode,
-                        isFixedPosition = window.getComputedStyle(container[0]).position == 'fixed';
+                        isFixedPosition = window.getComputedStyle(container[0]).position === 'fixed';
 
                     while (parent && isFixedPosition) {
                         scrollOffset += parent.scrollTop || 0;
